@@ -1,0 +1,227 @@
+@model HotelBookingSystem.ViewModels.AdminDashboardViewModel
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Executive Hotel Dashboard";
+}
+
+<!-- Key Metric Stat Cards -->
+<div class="row g-3 mb-4">
+    <!-- Total Rooms -->
+    <div class="col-sm-6 col-xl-3">
+        <div class="stat-card">
+            <div class="stat-icon green">
+                <i class="bi bi-door-open-fill"></i>
+            </div>
+            <div>
+                <div class="stat-value">@Model.TotalRooms</div>
+                <div class="stat-label">Total Rooms (@Model.ActiveRooms Active)</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Total Bookings -->
+    <div class="col-sm-6 col-xl-3">
+        <div class="stat-card">
+            <div class="stat-icon blue">
+                <i class="bi bi-calendar2-check-fill"></i>
+            </div>
+            <div>
+                <div class="stat-value">@Model.TotalBookings</div>
+                <div class="stat-label">Total Reservations</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirmed Bookings -->
+    <div class="col-sm-6 col-xl-3">
+        <div class="stat-card">
+            <div class="stat-icon gold">
+                <i class="bi bi-check-circle-fill"></i>
+            </div>
+            <div>
+                <div class="stat-value text-success">@Model.ConfirmedBookings</div>
+                <div class="stat-label">Confirmed (@Model.PendingBookings Pending)</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Total Revenue -->
+    <div class="col-sm-6 col-xl-3">
+        <div class="stat-card">
+            <div class="stat-icon gold">
+                <i class="bi bi-currency-dollar"></i>
+            </div>
+            <div>
+                <div class="stat-value text-primary">$@Model.TotalRevenue.ToString("N0")</div>
+                <div class="stat-label">Confirmed Revenue</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 mb-4">
+    <!-- Today's Occupancy & Overview -->
+    <div class="col-lg-4">
+        <div class="card border-0 shadow-sm rounded-4 p-4 h-100 bg-white">
+            <h5 class="fw-bold font-heading text-primary mb-3">Live Occupancy Rate</h5>
+            <div class="text-center py-4">
+                <div class="display-3 font-heading fw-bold text-primary mb-1">
+                    @Model.OccupancyRate%
+                </div>
+                <p class="text-muted small mb-3">Today's Active Room Occupancy</p>
+
+                <div class="progress" style="height: 12px;">
+                    <div class="progress-bar bg-warning" role="progressbar" style="width: @Model.OccupancyRate%;" aria-valuenow="@Model.OccupancyRate" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+            </div>
+
+            <div class="border-top pt-3 mt-auto">
+                <div class="d-flex justify-content-between align-items-center small py-1">
+                    <span class="text-muted">Active Rooms:</span>
+                    <span class="fw-bold">@Model.ActiveRooms</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center small py-1">
+                    <span class="text-muted">Pending Review:</span>
+                    <span class="fw-bold text-warning">@Model.PendingBookings</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center small py-1">
+                    <span class="text-muted">Cancelled Reservations:</span>
+                    <span class="fw-bold text-danger">@Model.CancelledBookings</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Room Status Summary -->
+    <div class="col-lg-8">
+        <div class="gv-table-card h-100">
+            <div class="p-3 border-bottom d-flex justify-content-between align-items-center bg-white">
+                <h5 class="fw-bold font-heading text-primary mb-0">Today's Room Status Summary</h5>
+                <a asp-area="Admin" asp-controller="Rooms" asp-action="Index" class="btn btn-outline-forest btn-sm">
+                    Manage All Rooms <i class="bi bi-arrow-right ms-1"></i>
+                </a>
+            </div>
+            <div class="table-responsive" style="max-height: 320px; overflow-y: auto;">
+                <table class="table gv-table align-middle">
+                    <thead>
+                        <tr>
+                            <th>Room #</th>
+                            <th>Suite Type</th>
+                            <th>Nightly</th>
+                            <th>Today's Status</th>
+                            <th>Current Guest</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var r in Model.RoomOccupancies)
+                        {
+                            <tr>
+                                <td class="fw-bold text-primary">#@r.RoomNumber</td>
+                                <td>@r.RoomType</td>
+                                <td>$@r.PricePerNight.ToString("N0")</td>
+                                <td>
+                                    @if (r.IsOccupiedToday)
+                                    {
+                                        <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-2 py-1 rounded-pill">
+                                            <i class="bi bi-person-fill me-1"></i> Occupied
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1 rounded-pill">
+                                            <i class="bi bi-check-circle me-1"></i> Vacant
+                                        </span>
+                                    }
+                                </td>
+                                <td class="small text-secondary">
+                                    @(r.CurrentGuestName ?? "None")
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Bookings Table -->
+<div class="gv-table-card">
+    <div class="p-3 border-bottom d-flex justify-content-between align-items-center bg-white">
+        <h5 class="fw-bold font-heading text-primary mb-0">Recent Reservations</h5>
+        <a asp-area="Admin" asp-controller="Bookings" asp-action="Index" class="btn btn-outline-forest btn-sm">
+            View All Reservations <i class="bi bi-arrow-right ms-1"></i>
+        </a>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table gv-table align-middle">
+            <thead>
+                <tr>
+                    <th>Reference</th>
+                    <th>Guest</th>
+                    <th>Suite</th>
+                    <th>Stay Dates</th>
+                    <th>Guests</th>
+                    <th>Total</th>
+                    <th>Status</th>
+                    <th class="text-end">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (!Model.RecentBookings.Any())
+                {
+                    <tr>
+                        <td colspan="8" class="text-center py-4 text-muted">No reservations recorded yet.</td>
+                    </tr>
+                }
+                else
+                {
+                    @foreach (var b in Model.RecentBookings)
+                    {
+                        <tr>
+                            <td class="font-monospace fw-bold text-dark">
+                                <a asp-area="Admin" asp-controller="Bookings" asp-action="Details" asp-route-id="@b.BookingId" class="text-decoration-none text-primary">
+                                    @b.BookingReference
+                                </a>
+                            </td>
+                            <td>
+                                <div class="fw-semibold text-dark">@b.GuestName</div>
+                                <div class="text-muted small">@b.Email</div>
+                            </td>
+                            <td>
+                                <div class="fw-semibold">@(b.Room?.RoomType ?? "Room " + b.RoomId)</div>
+                                <div class="text-muted small">Suite #@(b.Room?.RoomNumber ?? b.RoomId.ToString())</div>
+                            </td>
+                            <td class="small">
+                                <div>@b.CheckInDate.ToString("MMM dd") &ndash; @b.CheckOutDate.ToString("MMM dd, yyyy")</div>
+                                <div class="text-muted">@((b.CheckOutDate.Date - b.CheckInDate.Date).Days) nights</div>
+                            </td>
+                            <td>@b.GuestsCount</td>
+                            <td class="fw-bold text-primary">$@b.TotalAmount.ToString("N2")</td>
+                            <td>
+                                @if (b.BookingStatus == "Confirmed")
+                                {
+                                    <span class="badge-status-confirmed"><i class="bi bi-check-circle-fill"></i> Confirmed</span>
+                                }
+                                else if (b.BookingStatus == "Pending")
+                                {
+                                    <span class="badge-status-pending"><i class="bi bi-clock-fill"></i> Pending</span>
+                                }
+                                else
+                                {
+                                    <span class="badge-status-cancelled"><i class="bi bi-x-circle-fill"></i> Cancelled</span>
+                                }
+                            </td>
+                            <td class="text-end">
+                                <a asp-area="Admin" asp-controller="Bookings" asp-action="Details" asp-route-id="@b.BookingId" class="btn btn-sm btn-outline-secondary" title="View Details">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

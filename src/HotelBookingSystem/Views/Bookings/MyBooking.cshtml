@@ -1,0 +1,161 @@
+@model HotelBookingSystem.ViewModels.MyBookingLookupViewModel
+@{
+    ViewData["Title"] = "Retrieve Your Reservation - My Booking";
+}
+
+<div class="bg-dark text-white py-5" style="background: linear-gradient(rgba(15, 39, 32, 0.85), rgba(15, 39, 32, 0.85)), url('https://images.unsplash.com/photo-1566665797739-1674de7a421a?auto=format&fit=crop&w=1920&q=80') center/cover no-repeat;">
+    <div class="container text-center py-4">
+        <span class="text-uppercase text-gold fw-bold letter-spacing-2 small">Guest Services</span>
+        <h1 class="display-5 font-heading text-white mt-2 mb-2">Find Your Reservation</h1>
+        <p class="lead text-white-50 mx-auto" style="max-width: 600px;">
+            Enter your unique GrandVista booking reference code and the email address used during reservation to view your stay details.
+        </p>
+    </div>
+</div>
+
+<div class="container py-5">
+    <!-- Lookup Form -->
+    <div class="my-booking-lookup-card">
+        <h3 class="h4 font-heading text-primary text-center mb-4">Reservation Lookup</h3>
+
+        <form asp-controller="Bookings" asp-action="MyBooking" method="post">
+            @Html.AntiForgeryToken()
+
+            @if (!string.IsNullOrEmpty(Model.SearchError))
+            {
+                <div class="alert alert-danger d-flex align-items-center mb-4" role="alert">
+                    <i class="bi bi-exclamation-circle-fill fs-5 me-2 text-danger"></i>
+                    <div>@Model.SearchError</div>
+                </div>
+            }
+
+            <div class="mb-3">
+                <label asp-for="BookingReference" class="form-label small fw-bold text-uppercase text-muted"></label>
+                <div class="input-group">
+                    <span class="input-group-text bg-light"><i class="bi bi-hash"></i></span>
+                    <input asp-for="BookingReference" class="form-control text-uppercase" placeholder="e.g. GV-2026-A189C" required />
+                </div>
+                <span asp-validation-for="BookingReference" class="text-danger small"></span>
+                <div class="form-text small">Found on your confirmation email or reservation voucher.</div>
+            </div>
+
+            <div class="mb-4">
+                <label asp-for="Email" class="form-label small fw-bold text-uppercase text-muted"></label>
+                <div class="input-group">
+                    <span class="input-group-text bg-light"><i class="bi bi-envelope"></i></span>
+                    <input asp-for="Email" type="email" class="form-control" placeholder="name@example.com" required />
+                </div>
+                <span asp-validation-for="Email" class="text-danger small"></span>
+            </div>
+
+            <button type="submit" class="btn btn-gold w-100 py-3 fs-6">
+                <i class="bi bi-search me-1"></i> Retrieve Reservation
+            </button>
+        </form>
+    </div>
+
+    <!-- Booking Results Card (if found) -->
+    @if (Model.HasSearched && Model.BookingResult != null)
+    {
+        var b = Model.BookingResult;
+        var nights = (b.CheckOutDate.Date - b.CheckInDate.Date).Days;
+
+        <div class="confirmation-card mt-5">
+            <div class="p-4 p-md-5">
+                <div class="d-flex flex-wrap justify-content-between align-items-start border-bottom pb-4 mb-4">
+                    <div>
+                        <span class="badge bg-secondary text-primary px-3 py-1 rounded-pill small mb-2">Reservation Found</span>
+                        <h2 class="h3 font-heading mb-1">Booking #@b.BookingReference</h2>
+                        <div class="text-muted small">Booked on @b.CreatedAt.ToString("MMMM dd, yyyy")</div>
+                    </div>
+                    <div class="mt-2 mt-md-0">
+                        @if (b.BookingStatus == "Confirmed")
+                        {
+                            <span class="badge-status-confirmed fs-6"><i class="bi bi-check-circle-fill"></i> Confirmed</span>
+                        }
+                        else if (b.BookingStatus == "Pending")
+                        {
+                            <span class="badge-status-pending fs-6"><i class="bi bi-clock-fill"></i> Pending</span>
+                        }
+                        else
+                        {
+                            <span class="badge-status-cancelled fs-6"><i class="bi bi-x-circle-fill"></i> Cancelled</span>
+                        }
+                    </div>
+                </div>
+
+                <div class="row g-4 mb-4">
+                    <div class="col-md-6 border-end">
+                        <h5 class="fw-bold text-dark font-heading mb-3">Guest Information</h5>
+                        <table class="table table-borderless table-sm small">
+                            <tr>
+                                <td class="text-muted" style="width: 130px;">Guest Name:</td>
+                                <td class="fw-semibold text-dark">@b.GuestName</td>
+                            </tr>
+                            <tr>
+                                <td class="text-muted">Email:</td>
+                                <td class="fw-semibold text-dark">@b.Email</td>
+                            </tr>
+                            <tr>
+                                <td class="text-muted">Phone:</td>
+                                <td class="fw-semibold text-dark">@b.Phone</td>
+                            </tr>
+                            <tr>
+                                <td class="text-muted">Guests:</td>
+                                <td class="fw-semibold text-dark">@b.GuestsCount @(b.GuestsCount == 1 ? "Guest" : "Guests")</td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <div class="col-md-6">
+                        <h5 class="fw-bold text-dark font-heading mb-3">Stay Dates & Schedule</h5>
+                        <table class="table table-borderless table-sm small">
+                            <tr>
+                                <td class="text-muted" style="width: 130px;">Check-in:</td>
+                                <td class="fw-semibold text-dark">@b.CheckInDate.ToString("MMM dd, yyyy")</td>
+                            </tr>
+                            <tr>
+                                <td class="text-muted">Check-out:</td>
+                                <td class="fw-semibold text-dark">@b.CheckOutDate.ToString("MMM dd, yyyy")</td>
+                            </tr>
+                            <tr>
+                                <td class="text-muted">Duration:</td>
+                                <td class="fw-semibold text-dark">@nights night@(nights > 1 ? "s" : "")</td>
+                            </tr>
+                            <tr>
+                                <td class="text-muted">Total Payable:</td>
+                                <td class="fw-bold text-primary fs-5">$@b.TotalAmount.ToString("N2")</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+
+                @if (b.Room != null)
+                {
+                    <div class="card border rounded-3 p-3 bg-light mb-4">
+                        <div class="row align-items-center g-3">
+                            <div class="col-sm-3">
+                                <img src="@b.Room.ImageUrl" alt="@b.Room.RoomType" class="img-fluid rounded-3 object-fit-cover" style="height: 100px; width: 100%;" />
+                            </div>
+                            <div class="col-sm-9">
+                                <div class="badge bg-secondary text-primary mb-1">Room #@b.Room.RoomNumber</div>
+                                <h5 class="fw-bold mb-1">@b.Room.RoomType</h5>
+                                <p class="text-muted small mb-0">@b.Room.Description</p>
+                            </div>
+                        </div>
+                    </div>
+                }
+
+                <div class="d-flex justify-content-end gap-2">
+                    <a asp-action="Confirmation" asp-route-reference="@b.BookingReference" class="btn btn-outline-forest">
+                        <i class="bi bi-printer me-1"></i> View Printable Confirmation
+                    </a>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

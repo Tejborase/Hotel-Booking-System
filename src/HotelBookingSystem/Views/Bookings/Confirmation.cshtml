@@ -1,0 +1,140 @@
+@model HotelBookingSystem.ViewModels.BookingConfirmationViewModel
+@{
+    ViewData["Title"] = $"Reservation Confirmed - {Model.Booking.BookingReference}";
+}
+
+<div class="container py-5">
+    <div class="confirmation-card">
+        <!-- Header -->
+        <div class="confirmation-header">
+            <div class="confirmation-badge-success">
+                <i class="bi bi-check-lg"></i>
+            </div>
+            <h1 class="h2 font-heading text-white mb-2">Reservation Confirmed</h1>
+            <p class="text-white-50 mb-3">
+                Thank you, @Model.Booking.GuestName. A confirmation email has been dispatched to <strong>@Model.Booking.Email</strong>.
+            </p>
+            <div class="confirmation-ref-box text-white">
+                <small class="d-block text-warning text-uppercase" style="font-size: 0.72rem; letter-spacing: 0.15em;">Booking Reference</small>
+                <strong>@Model.Booking.BookingReference</strong>
+            </div>
+        </div>
+
+        <!-- Body -->
+        <div class="p-4 p-md-5">
+            <div class="row g-4 mb-4">
+                <div class="col-md-6 border-end">
+                    <h5 class="fw-bold text-dark font-heading mb-3">Guest & Contact Information</h5>
+                    <table class="table table-borderless table-sm small">
+                        <tr>
+                            <td class="text-muted" style="width: 140px;">Primary Guest:</td>
+                            <td class="fw-semibold text-dark">@Model.Booking.GuestName</td>
+                        </tr>
+                        <tr>
+                            <td class="text-muted">Email:</td>
+                            <td class="fw-semibold text-dark">@Model.Booking.Email</td>
+                        </tr>
+                        <tr>
+                            <td class="text-muted">Phone:</td>
+                            <td class="fw-semibold text-dark">@Model.Booking.Phone</td>
+                        </tr>
+                        <tr>
+                            <td class="text-muted">Total Guests:</td>
+                            <td class="fw-semibold text-dark">@Model.Booking.GuestsCount @(Model.Booking.GuestsCount == 1 ? "Guest" : "Guests")</td>
+                        </tr>
+                        <tr>
+                            <td class="text-muted">Booking Status:</td>
+                            <td>
+                                @if (Model.Booking.BookingStatus == "Confirmed")
+                                {
+                                    <span class="badge-status-confirmed"><i class="bi bi-check-circle-fill"></i> Confirmed</span>
+                                }
+                                else if (Model.Booking.BookingStatus == "Pending")
+                                {
+                                    <span class="badge-status-pending"><i class="bi bi-clock-fill"></i> Pending</span>
+                                }
+                                else
+                                {
+                                    <span class="badge-status-cancelled"><i class="bi bi-x-circle-fill"></i> Cancelled</span>
+                                }
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="col-md-6">
+                    <h5 class="fw-bold text-dark font-heading mb-3">Stay & Schedule</h5>
+                    <table class="table table-borderless table-sm small">
+                        <tr>
+                            <td class="text-muted" style="width: 140px;">Check-in:</td>
+                            <td class="fw-semibold text-dark">@Model.Booking.CheckInDate.ToString("dddd, MMMM dd, yyyy") <span class="text-muted">(3:00 PM)</span></td>
+                        </tr>
+                        <tr>
+                            <td class="text-muted">Check-out:</td>
+                            <td class="fw-semibold text-dark">@Model.Booking.CheckOutDate.ToString("dddd, MMMM dd, yyyy") <span class="text-muted">(11:00 AM)</span></td>
+                        </tr>
+                        <tr>
+                            <td class="text-muted">Total Duration:</td>
+                            <td class="fw-semibold text-dark">@Model.Nights Night@(Model.Nights > 1 ? "s" : "")</td>
+                        </tr>
+                        <tr>
+                            <td class="text-muted">Payment:</td>
+                            <td class="fw-semibold text-success">Pay at Hotel Check-in</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Room Snapshot Card -->
+            <div class="card border rounded-3 p-3 bg-light mb-4">
+                <div class="row align-items-center g-3">
+                    <div class="col-sm-4">
+                        <img src="@Model.Room.ImageUrl" alt="@Model.Room.RoomType" class="img-fluid rounded-3 object-fit-cover" style="height: 120px; width: 100%;" />
+                    </div>
+                    <div class="col-sm-8">
+                        <div class="badge bg-secondary text-primary mb-1">Room #@Model.Room.RoomNumber</div>
+                        <h5 class="fw-bold mb-1">@Model.Room.RoomType</h5>
+                        <p class="text-muted small mb-2 text-truncate" style="max-width: 400px;">@Model.Room.Description</p>
+                        <div class="text-muted small">
+                            Nightly rate: $@Model.Booking.PricePerNight.ToString("N2") &times; @Model.Nights night@(Model.Nights > 1 ? "s" : "")
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            @if (!string.IsNullOrWhiteSpace(Model.Booking.SpecialRequests))
+            {
+                <div class="alert alert-light border small mb-4">
+                    <strong>Special Requests:</strong> @Model.Booking.SpecialRequests
+                </div>
+            }
+
+            <!-- Financial Total Summary -->
+            <div class="d-flex justify-content-between align-items-center p-3 rounded-3 border bg-white mb-4">
+                <div>
+                    <span class="text-uppercase text-muted small fw-bold">Total Amount Due</span>
+                    <div class="small text-muted">All local taxes & fees included</div>
+                </div>
+                <div class="fs-2 fw-bold text-primary font-heading">
+                    $@Model.Booking.TotalAmount.ToString("N2")
+                </div>
+            </div>
+
+            <!-- Print & Action Buttons -->
+            <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 no-print">
+                <a asp-controller="Home" asp-action="Index" class="btn btn-outline-forest">
+                    <i class="bi bi-house-door me-1"></i> Return to Home
+                </a>
+                
+                <div class="d-flex gap-2">
+                    <a asp-controller="Bookings" asp-action="MyBooking" class="btn btn-outline-secondary">
+                        <i class="bi bi-search me-1"></i> View in My Booking
+                    </a>
+                    <button type="button" class="btn btn-gold" onclick="window.print()">
+                        <i class="bi bi-printer me-1"></i> Print Confirmation
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

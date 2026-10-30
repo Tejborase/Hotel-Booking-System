@@ -1,0 +1,236 @@
+@model HotelBookingSystem.ViewModels.RoomSearchViewModel
+@{
+    ViewData["Title"] = "Suites & Accommodations";
+}
+
+<div class="bg-dark text-white py-5" style="background: linear-gradient(rgba(15, 39, 32, 0.85), rgba(15, 39, 32, 0.85)), url('https://images.unsplash.com/photo-1578683010236-d716f9a3f461?auto=format&fit=crop&w=1920&q=80') center/cover no-repeat;">
+    <div class="container text-center py-4">
+        <span class="text-uppercase text-gold fw-bold letter-spacing-2 small">GrandVista Collection</span>
+        <h1 class="display-5 font-heading text-white mt-2 mb-3">Rooms & Luxury Suites</h1>
+        <p class="lead text-white-50 mx-auto" style="max-width: 650px;">
+            Immerse yourself in elevated comfort. Each sanctuary offers handcrafted details, bespoke comfort, and private balconies overlooking coastal or city vistas.
+        </p>
+    </div>
+</div>
+
+<div class="container py-5">
+    <!-- Filter and Search Bar -->
+    <div class="card border-0 shadow-sm rounded-4 p-4 mb-5" style="background-color: var(--gv-secondary);">
+        <form asp-controller="Rooms" asp-action="Index" method="get" id="filterForm">
+            <div class="row g-3">
+                <!-- Check-in & Check-out Dates -->
+                <div class="col-lg-3 col-md-6">
+                    <label class="form-label small fw-bold text-uppercase text-muted" for="filterCheckIn">
+                        <i class="bi bi-calendar-event text-warning"></i> Check-in Date
+                    </label>
+                    <input type="date" class="form-control" id="filterCheckIn" name="checkInDate"
+                           value="@(Model.CheckInDate?.ToString("yyyy-MM-dd") ?? "")"
+                           min="@DateTime.Today.ToString("yyyy-MM-dd")" />
+                    <span asp-validation-for="CheckInDate" class="text-danger small"></span>
+                </div>
+
+                <div class="col-lg-3 col-md-6">
+                    <label class="form-label small fw-bold text-uppercase text-muted" for="filterCheckOut">
+                        <i class="bi bi-calendar-check text-warning"></i> Check-out Date
+                    </label>
+                    <input type="date" class="form-control" id="filterCheckOut" name="checkOutDate"
+                           value="@(Model.CheckOutDate?.ToString("yyyy-MM-dd") ?? "")"
+                           min="@DateTime.Today.AddDays(1).ToString("yyyy-MM-dd")" />
+                    <span asp-validation-for="CheckOutDate" class="text-danger small"></span>
+                </div>
+
+                <!-- Room Type Filter -->
+                <div class="col-lg-3 col-md-6">
+                    <label class="form-label small fw-bold text-uppercase text-muted" for="filterRoomType">
+                        <i class="bi bi-tag text-warning"></i> Room Category
+                    </label>
+                    <select class="form-select" id="filterRoomType" name="roomType">
+                        <option value="">All Categories</option>
+                        @foreach (var type in Model.AvailableRoomTypes)
+                        {
+                            <option value="@type" selected="@(Model.RoomType == type)">@type</option>
+                        }
+                    </select>
+                </div>
+
+                <!-- Guests Filter -->
+                <div class="col-lg-3 col-md-6">
+                    <label class="form-label small fw-bold text-uppercase text-muted" for="filterGuests">
+                        <i class="bi bi-people text-warning"></i> Minimum Capacity
+                    </label>
+                    <select class="form-select" id="filterGuests" name="guests">
+                        <option value="">Any Guests</option>
+                        <option value="1" selected="@(Model.Guests == 1)">1+ Guest</option>
+                        <option value="2" selected="@(Model.Guests == 2)">2+ Guests</option>
+                        <option value="3" selected="@(Model.Guests == 3)">3+ Guests</option>
+                        <option value="4" selected="@(Model.Guests == 4)">4+ Guests</option>
+                        <option value="5" selected="@(Model.Guests == 5)">5+ Guests</option>
+                    </select>
+                </div>
+
+                <!-- Price Range Filter -->
+                <div class="col-lg-3 col-md-6">
+                    <label class="form-label small fw-bold text-uppercase text-muted" for="minPrice">
+                        <i class="bi bi-cash-stack text-warning"></i> Min Price ($)
+                    </label>
+                    <input type="number" class="form-control" id="minPrice" name="minPrice" 
+                           placeholder="e.g. 200" value="@Model.MinPrice" min="0" step="10" />
+                </div>
+
+                <div class="col-lg-3 col-md-6">
+                    <label class="form-label small fw-bold text-uppercase text-muted" for="maxPrice">
+                        <i class="bi bi-cash-stack text-warning"></i> Max Price ($)
+                    </label>
+                    <input type="number" class="form-control" id="maxPrice" name="maxPrice" 
+                           placeholder="e.g. 1000" value="@Model.MaxPrice" min="0" step="10" />
+                </div>
+
+                <!-- Sort By -->
+                <div class="col-lg-3 col-md-6">
+                    <label class="form-label small fw-bold text-uppercase text-muted" for="sortBy">
+                        <i class="bi bi-sort-down text-warning"></i> Sort Order
+                    </label>
+                    <select class="form-select" id="sortBy" name="sortBy">
+                        <option value="">Default (Room Number)</option>
+                        <option value="price_asc" selected="@(Model.SortBy == "price_asc")">Price: Low to High</option>
+                        <option value="price_desc" selected="@(Model.SortBy == "price_desc")">Price: High to Low</option>
+                        <option value="capacity_desc" selected="@(Model.SortBy == "capacity_desc")">Guest Capacity: High to Low</option>
+                    </select>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="col-lg-3 col-md-6 d-flex align-items-end gap-2">
+                    <button type="submit" class="btn btn-gold flex-grow-1 py-2">
+                        <i class="bi bi-funnel me-1"></i> Apply Filters
+                    </button>
+                    <a asp-action="Index" class="btn btn-outline-secondary py-2" title="Reset Filters">
+                        <i class="bi bi-arrow-counterclockwise"></i> Reset
+                    </a>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Active Search Filter Summary -->
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 pb-2 border-bottom">
+        <div>
+            <h4 class="h5 fw-bold mb-1">
+                @if (Model.HasSearchedDates)
+                {
+                    <span>Available Rooms for @Model.CheckInDate?.ToString("MMM dd, yyyy") &ndash; @Model.CheckOutDate?.ToString("MMM dd, yyyy")</span>
+                }
+                else
+                {
+                    <span>All Luxury Accommodations</span>
+                }
+            </h4>
+            <div class="text-muted small">
+                Showing @Model.TotalResultsCount rooms matching your preferences
+            </div>
+        </div>
+
+        @if (Model.HasSearchedDates)
+        {
+            <div class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-3 py-2 rounded-pill mt-2 mt-md-0">
+                <i class="bi bi-check2-circle me-1"></i> Live Availability Checked
+            </div>
+        }
+    </div>
+
+    <!-- Rooms Grid -->
+    @if (!Model.Rooms.Any())
+    {
+        <!-- Empty State -->
+        <div class="text-center py-5 my-4 bg-white rounded-4 border p-5 shadow-sm">
+            <div class="mb-3 text-muted display-4">
+                <i class="bi bi-search"></i>
+            </div>
+            <h3 class="h4 fw-bold">No Rooms Match Your Criteria</h3>
+            <p class="text-muted mx-auto" style="max-width: 500px;">
+                We couldn't find any available luxury rooms for the selected criteria or dates. Try adjusting your dates, price range, or guest count.
+            </p>
+            <a asp-action="Index" class="btn btn-outline-forest mt-2">
+                <i class="bi bi-arrow-repeat me-1"></i> Clear All Filters
+            </a>
+        </div>
+    }
+    else
+    {
+        <div class="row g-4">
+            @foreach (var room in Model.Rooms)
+            {
+                <div class="col-lg-4 col-md-6">
+                    <div class="room-card">
+                        <div class="room-card-image-wrap">
+                            <img src="@room.ImageUrl" alt="@room.RoomType" class="room-card-image" loading="lazy" />
+                            <span class="room-badge-type">@room.RoomType</span>
+                            <div class="room-badge-price">
+                                $@room.PricePerNight.ToString("N0") <span>/ night</span>
+                            </div>
+                        </div>
+
+                        <div class="room-card-body">
+                            <h3 class="room-card-title">@room.RoomType</h3>
+                            
+                            <div class="room-meta-tags">
+                                <span class="room-meta-tag" title="Maximum Capacity"><i class="bi bi-people text-warning"></i> Up to @room.Capacity guests</span>
+                                <span class="room-meta-tag" title="Room Identifier"><i class="bi bi-door-closed text-warning"></i> Room #@room.RoomNumber</span>
+                            </div>
+
+                            <p class="room-description">@room.Description</p>
+
+                            <div class="room-amenity-pills">
+                                @if (!string.IsNullOrEmpty(room.Amenities))
+                                {
+                                    @foreach (var amenity in room.Amenities.Split(',', StringSplitOptions.TrimEntries).Take(4))
+                                    {
+                                        <span class="amenity-pill"><i class="bi bi-check2 text-success me-1"></i>@amenity</span>
+                                    }
+                                }
+                            </div>
+
+                            <div class="room-card-actions">
+                                <a asp-action="Details" 
+                                   asp-route-id="@room.RoomId" 
+                                   asp-route-checkIn="@(Model.CheckInDate?.ToString("yyyy-MM-dd"))"
+                                   asp-route-checkOut="@(Model.CheckOutDate?.ToString("yyyy-MM-dd"))"
+                                   asp-route-guests="@Model.Guests"
+                                   class="btn btn-outline-forest flex-grow-1">
+                                    View Details
+                                </a>
+                                <a asp-controller="Bookings" 
+                                   asp-action="Create" 
+                                   asp-route-roomId="@room.RoomId"
+                                   asp-route-checkIn="@(Model.CheckInDate?.ToString("yyyy-MM-dd"))"
+                                   asp-route-checkOut="@(Model.CheckOutDate?.ToString("yyyy-MM-dd"))"
+                                   asp-route-guests="@Model.Guests"
+                                   class="btn btn-gold flex-grow-1">
+                                    Book Now
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        const checkIn = document.getElementById('filterCheckIn');
+        const checkOut = document.getElementById('filterCheckOut');
+
+        checkIn?.addEventListener('change', function () {
+            if (checkIn.value) {
+                const nextDay = new Date(checkIn.value);
+                nextDay.setDate(nextDay.getDate() + 1);
+                const nextDayStr = nextDay.toISOString().split('T')[0];
+                checkOut.min = nextDayStr;
+                if (checkOut.value && checkOut.value <= checkIn.value) {
+                    checkOut.value = nextDayStr;
+                }
+            }
+        });
+    </script>
+}

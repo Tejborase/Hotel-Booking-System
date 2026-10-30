@@ -1,0 +1,391 @@
+@model HotelBookingSystem.ViewModels.HomeViewModel
+@{
+    ViewData["Title"] = "Luxury Stays & Bespoke Hospitality";
+}
+
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container position-relative z-2">
+        <div class="hero-subtitle-badge">
+            <i class="bi bi-star-fill text-warning"></i>
+            <span>Award-Winning 5-Star Boutique Experience</span>
+        </div>
+        <h1 class="hero-title">Experience Comfort.<br>Discover Luxury.</h1>
+        <p class="hero-desc">
+            Nestled along the pristine coastal bay, GrandVista redefines hospitality with timeless architecture, tranquil ocean suites, and intuitive personal service tailored to your every rhythm.
+        </p>
+        <div class="d-flex flex-wrap justify-content-center gap-3">
+            <a href="#booking-search" class="btn btn-gold btn-lg">
+                <i class="bi bi-calendar-check me-1"></i> Book Your Stay
+            </a>
+            <a asp-controller="Rooms" asp-action="Index" class="btn btn-outline-light btn-lg">
+                <i class="bi bi-compass me-1"></i> Explore All Suites
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Floating Booking Search Form -->
+<div class="container search-widget-container" id="booking-search">
+    <div class="search-widget-card">
+        <form asp-controller="Rooms" asp-action="Index" method="get">
+            <div class="row g-3 align-items-end">
+                <div class="col-lg-3 col-md-6">
+                    <label class="form-label" for="homeCheckIn">
+                        <i class="bi bi-calendar-event text-warning"></i> Check-in Date
+                    </label>
+                    <input type="date" class="form-control" id="homeCheckIn" name="checkInDate" 
+                           value="@Model.CheckInDate.ToString("yyyy-MM-dd")" 
+                           min="@DateTime.Today.ToString("yyyy-MM-dd")" required />
+                </div>
+
+                <div class="col-lg-3 col-md-6">
+                    <label class="form-label" for="homeCheckOut">
+                        <i class="bi bi-calendar-check text-warning"></i> Check-out Date
+                    </label>
+                    <input type="date" class="form-control" id="homeCheckOut" name="checkOutDate" 
+                           value="@Model.CheckOutDate.ToString("yyyy-MM-dd")" 
+                           min="@DateTime.Today.AddDays(1).ToString("yyyy-MM-dd")" required />
+                </div>
+
+                <div class="col-lg-3 col-md-6">
+                    <label class="form-label" for="homeGuests">
+                        <i class="bi bi-people text-warning"></i> Guests Count
+                    </label>
+                    <select class="form-select" id="homeGuests" name="guests">
+                        <option value="1">1 Guest</option>
+                        <option value="2" selected>2 Guests</option>
+                        <option value="3">3 Guests</option>
+                        <option value="4">4 Guests</option>
+                        <option value="5">5+ Guests (Family)</option>
+                    </select>
+                </div>
+
+                <div class="col-lg-3 col-md-6">
+                    <button type="submit" class="btn btn-gold w-100 py-3">
+                        <i class="bi bi-search me-1"></i> Search Available Rooms
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Featured Rooms Section -->
+<section class="py-5 mt-4">
+    <div class="container py-4">
+        <div class="text-center mb-5">
+            <span class="text-uppercase text-gold fw-bold letter-spacing-2 small">Accommodations</span>
+            <h2 class="display-6 fw-bold mt-2">Featured Luxury Suites</h2>
+            <p class="text-muted mx-auto" style="max-width: 600px;">
+                Each room is an oasis of calm, curated with handcrafted furnishings, marble baths, and floor-to-ceiling windows overlooking breathtaking vistas.
+            </p>
+        </div>
+
+        <div class="row g-4">
+            @foreach (var room in Model.FeaturedRooms)
+            {
+                <div class="col-lg-4 col-md-6">
+                    <div class="room-card">
+                        <div class="room-card-image-wrap">
+                            <img src="@room.ImageUrl" alt="@room.RoomType" class="room-card-image" loading="lazy" />
+                            <span class="room-badge-type">@room.RoomType</span>
+                            <div class="room-badge-price">
+                                $@room.PricePerNight.ToString("N0") <span>/ night</span>
+                            </div>
+                        </div>
+
+                        <div class="room-card-body">
+                            <h3 class="room-card-title">@room.RoomType</h3>
+                            
+                            <div class="room-meta-tags">
+                                <span class="room-meta-tag"><i class="bi bi-people text-warning"></i> Up to @room.Capacity guests</span>
+                                <span class="room-meta-tag"><i class="bi bi-door-closed text-warning"></i> Room #@room.RoomNumber</span>
+                            </div>
+
+                            <p class="room-description">@room.Description</p>
+
+                            <div class="room-amenity-pills">
+                                @if (!string.IsNullOrEmpty(room.Amenities))
+                                {
+                                    @foreach (var amenity in room.Amenities.Split(',', StringSplitOptions.TrimEntries).Take(4))
+                                    {
+                                        <span class="amenity-pill"><i class="bi bi-check2 text-success me-1"></i>@amenity</span>
+                                    }
+                                }
+                            </div>
+
+                            <div class="room-card-actions">
+                                <a asp-controller="Rooms" asp-action="Details" asp-route-id="@room.RoomId" class="btn btn-outline-forest flex-grow-1">
+                                    View Details
+                                </a>
+                                <a asp-controller="Bookings" asp-action="Create" asp-route-roomId="@room.RoomId" class="btn btn-gold flex-grow-1">
+                                    Book Now
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <div class="text-center mt-5">
+            <a asp-controller="Rooms" asp-action="Index" class="btn btn-outline-forest btn-lg">
+                View All Rooms & Suites (@Model.TotalRoomsAvailable Available) <i class="bi bi-arrow-right ms-2"></i>
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Hotel Facilities Section -->
+<section class="py-5 bg-white border-top border-bottom border-light">
+    <div class="container py-4">
+        <div class="text-center mb-5">
+            <span class="text-uppercase text-gold fw-bold letter-spacing-2 small">Indulgence & Wellness</span>
+            <h2 class="display-6 fw-bold mt-2">World-Class Hotel Amenities</h2>
+            <p class="text-muted mx-auto" style="max-width: 650px;">
+                Everything you require for an unforgettable escape, curated with meticulous European precision and warm personalized hospitality.
+            </p>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-lg-4 col-md-6">
+                <div class="facility-card">
+                    <div class="facility-icon-wrap">
+                        <i class="bi bi-water"></i>
+                    </div>
+                    <h4 class="h5 fw-bold mb-2">Infinity Edge Pool</h4>
+                    <p class="text-muted small mb-0">
+                        Heated saltwater pool overlooking the bay with poolside cabanas, chilled towel service, and artisan cocktail service.
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-lg-4 col-md-6">
+                <div class="facility-card">
+                    <div class="facility-icon-wrap">
+                        <i class="bi bi-cup-hot"></i>
+                    </div>
+                    <h4 class="h5 fw-bold mb-2">Michelin Dining & Lounge</h4>
+                    <p class="text-muted small mb-0">
+                        Award-winning seasonal gastronomy by Executive Chef Jean-Luc, featuring fresh organic ingredients and a 500-label wine cellar.
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-lg-4 col-md-6">
+                <div class="facility-card">
+                    <div class="facility-icon-wrap">
+                        <i class="bi bi-flower1"></i>
+                    </div>
+                    <h4 class="h5 fw-bold mb-2">Holistic Ayurvedic Spa</h4>
+                    <p class="text-muted small mb-0">
+                        Tailored botanical treatments, Himalayan salt steam rooms, hydrotherapy baths, and daily sunrise yoga pavilions.
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-lg-4 col-md-6">
+                <div class="facility-card">
+                    <div class="facility-icon-wrap">
+                        <i class="bi bi-car-front"></i>
+                    </div>
+                    <h4 class="h5 fw-bold mb-2">Private Chauffeur Service</h4>
+                    <p class="text-muted small mb-0">
+                        Complimentary luxury airport transfers and city excursions in our dedicated fleet of electric luxury vehicles.
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-lg-4 col-md-6">
+                <div class="facility-card">
+                    <div class="facility-icon-wrap">
+                        <i class="bi bi-shield-check"></i>
+                    </div>
+                    <h4 class="h5 fw-bold mb-2">24/7 Dedicated Butler</h4>
+                    <p class="text-muted small mb-0">
+                        From unpacking your luggage to arranging private yacht charters, your bespoke butler is always at your command.
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-lg-4 col-md-6">
+                <div class="facility-card">
+                    <div class="facility-icon-wrap">
+                        <i class="bi bi-wifi"></i>
+                    </div>
+                    <h4 class="h5 fw-bold mb-2">High-Speed Wi-Fi & Media</h4>
+                    <p class="text-muted small mb-0">
+                        Seamless enterprise fiber-optic connectivity, smart room integration, and international multimedia channels.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Why Choose GrandVista -->
+<section class="py-5" style="background-color: var(--gv-secondary);">
+    <div class="container py-4">
+        <div class="row align-items-center g-5">
+            <div class="col-lg-6">
+                <div class="position-relative">
+                    <img src="https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=1000&q=80" 
+                         alt="GrandVista Architecture" class="img-fluid rounded-4 shadow-lg" />
+                    <div class="position-absolute bottom-0 start-0 m-4 p-3 bg-white rounded-3 shadow d-none d-sm-flex align-items-center gap-3">
+                        <div class="bg-warning bg-opacity-25 p-2 rounded-circle text-warning fs-3">
+                            <i class="bi bi-award-fill"></i>
+                        </div>
+                        <div>
+                            <div class="fw-bold text-dark">Ranked #1 Luxury Resort</div>
+                            <small class="text-muted">Global Traveler Awards 2025</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <span class="text-uppercase text-gold fw-bold letter-spacing-2 small">Why Choose Us</span>
+                <h2 class="display-6 fw-bold mt-2 mb-4">Elevated Hospitality That Anticipates Your Wishes</h2>
+                <p class="text-muted mb-4">
+                    At GrandVista, luxury is not merely an aesthetic; it is an atmosphere of serene comfort, intuitive attention to detail, and authentic human warmth.
+                </p>
+
+                <div class="d-flex align-items-start gap-3 mb-3">
+                    <div class="rounded-circle bg-success bg-opacity-10 text-success p-2 mt-1">
+                        <i class="bi bi-shield-lock-fill fs-5"></i>
+                    </div>
+                    <div>
+                        <h5 class="fw-semibold mb-1">Guaranteed Best Rates & Flexible Terms</h5>
+                        <p class="text-muted small mb-0">Direct booking privilege ensures complimentary suite upgrades when available and flexible cancellation policies.</p>
+                    </div>
+                </div>
+
+                <div class="d-flex align-items-start gap-3 mb-3">
+                    <div class="rounded-circle bg-success bg-opacity-10 text-success p-2 mt-1">
+                        <i class="bi bi-geo-alt-fill fs-5"></i>
+                    </div>
+                    <div>
+                        <h5 class="fw-semibold mb-1">Prime Waterfront Location</h5>
+                        <p class="text-muted small mb-0">Minutes from high-end cultural attractions and private sandy beaches, yet completely insulated in peaceful tranquility.</p>
+                    </div>
+                </div>
+
+                <div class="d-flex align-items-start gap-3">
+                    <div class="rounded-circle bg-success bg-opacity-10 text-success p-2 mt-1">
+                        <i class="bi bi-stars fs-5"></i>
+                    </div>
+                    <div>
+                        <h5 class="fw-semibold mb-1">Tailored Concierge Experiences</h5>
+                        <p class="text-muted small mb-0">Private vineyard tours, helicopter transfers, and custom dining itineraries organized seamlessly by our concierge.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Guest Testimonials -->
+<section class="py-5">
+    <div class="container py-4">
+        <div class="text-center mb-5">
+            <span class="text-uppercase text-gold fw-bold letter-spacing-2 small">Guest Stories</span>
+            <h2 class="display-6 fw-bold mt-2">What Discerning Guests Say</h2>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-lg-4 col-md-6">
+                <div class="p-4 bg-white rounded-4 border shadow-sm h-100 d-flex flex-direction-column">
+                    <div class="text-warning mb-3">
+                        <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+                    </div>
+                    <p class="fst-italic text-secondary mb-4 flex-grow-1">
+                        "The Deluxe Oceanfront Suite blew us away. Waking up to the morning waves and the immaculate breakfast served on our terrace made this our most memorable anniversary ever."
+                    </p>
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center fw-bold" style="width: 44px; height: 44px;">
+                            CL
+                        </div>
+                        <div>
+                            <div class="fw-bold text-dark">Lady Charlotte Lennox</div>
+                            <small class="text-muted">London, United Kingdom</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4 col-md-6">
+                <div class="p-4 bg-white rounded-4 border shadow-sm h-100 d-flex flex-direction-column">
+                    <div class="text-warning mb-3">
+                        <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+                    </div>
+                    <p class="fst-italic text-secondary mb-4 flex-grow-1">
+                        "As a frequent international traveler, the level of discretion and service at GrandVista is peerless. The booking process was effortless, and the private chauffeur was waiting right on time."
+                    </p>
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center fw-bold" style="width: 44px; height: 44px;">
+                            AK
+                        </div>
+                        <div>
+                            <div class="fw-bold text-dark">Alexander Kaufmann</div>
+                            <small class="text-muted">Zurich, Switzerland</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4 col-md-6">
+                <div class="p-4 bg-white rounded-4 border shadow-sm h-100 d-flex flex-direction-column">
+                    <div class="text-warning mb-3">
+                        <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+                    </div>
+                    <p class="fst-italic text-secondary mb-4 flex-grow-1">
+                        "The Presidential Penthouse exceeded every expectation. Flawless acoustic isolation, spectacular sunsets, and the spa facilities were pure rejuvenation."
+                    </p>
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center fw-bold" style="width: 44px; height: 44px;">
+                            VM
+                        </div>
+                        <div>
+                            <div class="fw-bold text-dark">Victoria & Mateo Rossi</div>
+                            <small class="text-muted">Milan, Italy</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Call to Action Banner -->
+<section class="py-5" style="background: var(--gv-primary); color: #FFFFFF;">
+    <div class="container py-4 text-center">
+        <h2 class="display-6 font-heading text-white mb-3">Your Unforgettable Escape Awaits</h2>
+        <p class="lead text-white-50 mx-auto mb-4" style="max-width: 650px;">
+            Reserve your suite directly with GrandVista for complimentary welcome champagne, high-floor privileges, and flexible check-out.
+        </p>
+        <a asp-controller="Rooms" asp-action="Index" class="btn btn-gold btn-lg px-5">
+            Browse All Suites & Rates
+        </a>
+    </div>
+</section>
+
+@section Scripts {
+    <script>
+        // Synchronize date constraints
+        const checkIn = document.getElementById('homeCheckIn');
+        const checkOut = document.getElementById('homeCheckOut');
+
+        checkIn.addEventListener('change', function () {
+            if (checkIn.value) {
+                const nextDay = new Date(checkIn.value);
+                nextDay.setDate(nextDay.getDate() + 1);
+                const nextDayStr = nextDay.toISOString().split('T')[0];
+                checkOut.min = nextDayStr;
+                if (checkOut.value <= checkIn.value) {
+                    checkOut.value = nextDayStr;
+                }
+            }
+        });
+    </script>
+}

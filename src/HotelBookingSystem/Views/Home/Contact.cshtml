@@ -1,0 +1,98 @@
+@{
+    ViewData["Title"] = "Contact & Concierge - GrandVista Hotel";
+}
+
+<div class="bg-dark text-white py-5" style="background: linear-gradient(rgba(15, 39, 32, 0.85), rgba(15, 39, 32, 0.85)), url('https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=1920&q=80') center/cover no-repeat;">
+    <div class="container text-center py-4">
+        <span class="text-uppercase text-gold fw-bold letter-spacing-2 small">At Your Service</span>
+        <h1 class="display-5 font-heading text-white mt-2 mb-2">Concierge & Inquiries</h1>
+        <p class="lead text-white-50 mx-auto" style="max-width: 600px;">
+            Whether you are arranging a private dining experience, helicopter transfer, or have a question about reservations, our concierge is available 24/7.
+        </p>
+    </div>
+</div>
+
+<div class="container py-5">
+    <div class="row g-5">
+        <div class="col-lg-5">
+            <h3 class="h4 font-heading mb-4 text-primary">Contact Information</h3>
+            
+            <div class="d-flex align-items-start gap-3 mb-4">
+                <div class="rounded-circle bg-warning bg-opacity-25 text-warning p-3">
+                    <i class="bi bi-geo-alt fs-4"></i>
+                </div>
+                <div>
+                    <h5 class="fw-bold mb-1">Hotel Location</h5>
+                    <p class="text-muted mb-0">742 Grand Vista Boulevard<br>Coastal Bay, CA 90210, USA</p>
+                </div>
+            </div>
+
+            <div class="d-flex align-items-start gap-3 mb-4">
+                <div class="rounded-circle bg-warning bg-opacity-25 text-warning p-3">
+                    <i class="bi bi-telephone fs-4"></i>
+                </div>
+                <div>
+                    <h5 class="fw-bold mb-1">Direct Reservations</h5>
+                    <p class="text-muted mb-0">+1 (800) 555-VISTA<br>+1 (555) 789-0123</p>
+                </div>
+            </div>
+
+            <div class="d-flex align-items-start gap-3 mb-4">
+                <div class="rounded-circle bg-warning bg-opacity-25 text-warning p-3">
+                    <i class="bi bi-envelope fs-4"></i>
+                </div>
+                <div>
+                    <h5 class="fw-bold mb-1">Concierge Email</h5>
+                    <p class="text-muted mb-0">concierge@grandvista.com<br>reservations@grandvista.com</p>
+                </div>
+            </div>
+
+            <div class="card border rounded-4 p-4 bg-light">
+                <h6 class="fw-bold text-dark mb-2">Reception Hours</h6>
+                <p class="text-muted small mb-0">
+                    Front Desk & Valet operate 24 hours daily, 365 days a year. Check-in commences at 3:00 PM; check-out is requested by 11:00 AM.
+                </p>
+            </div>
+        </div>
+
+        <div class="col-lg-7">
+            <div class="card border rounded-4 p-4 p-md-5 bg-white shadow-sm">
+                <h3 class="h4 font-heading mb-3 text-primary">Send a Message to Concierge</h3>
+                <p class="text-muted small mb-4">We respond to all guest inquiries within two hours.</p>
+
+                <form onsubmit="event.preventDefault(); alert('Thank you for reaching out to GrandVista Concierge. A concierge representative will contact you shortly.'); this.reset();">
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-uppercase text-muted">Your Name</label>
+                            <input type="text" class="form-control" placeholder="Eleanor Vance" required />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-uppercase text-muted">Email Address</label>
+                            <input type="email" class="form-control" placeholder="eleanor@example.com" required />
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-uppercase text-muted">Subject / Inquiry Type</label>
+                        <select class="form-select">
+                            <option>Suite Inquiry & Special Bookings</option>
+                            <option>Private Dining & Wine Cellar</option>
+                            <option>Airport Chauffeur & Transfers</option>
+                            <option>Corporate Events & Retreats</option>
+                            <option>General Inquiries</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label small fw-bold text-uppercase text-muted">Your Message</label>
+                        <textarea class="form-control" rows="4" placeholder="How may our concierge assist your upcoming stay?" required></textarea>
+                    </div>
+
+                    <button type="submit" class="btn btn-gold py-3 px-4">
+                        <i class="bi bi-send me-1"></i> Send Concierge Message
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

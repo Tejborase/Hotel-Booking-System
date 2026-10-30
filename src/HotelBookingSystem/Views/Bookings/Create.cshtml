@@ -1,0 +1,214 @@
+@model HotelBookingSystem.ViewModels.BookingCreateViewModel
+@{
+    ViewData["Title"] = $"Complete Reservation - {Model.RoomType}";
+}
+
+<div class="bg-light py-4 border-bottom">
+    <div class="container">
+        <h1 class="display-6 font-heading mb-1">Confirm Your Reservation</h1>
+        <p class="text-muted small mb-0">Step 2 of 2: Guest Details & Final Confirmation</p>
+    </div>
+</div>
+
+<div class="container py-5">
+    <div class="row g-5">
+        <!-- Guest Details Form -->
+        <div class="col-lg-7">
+            <div class="card border rounded-4 p-4 p-md-5 bg-white shadow-sm">
+                <h3 class="h4 font-heading mb-4 text-primary">Guest Contact Information</h3>
+
+                <form asp-controller="Bookings" asp-action="Create" method="post" id="bookingForm">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" asp-for="RoomId" />
+                    <input type="hidden" asp-for="RoomNumber" />
+                    <input type="hidden" asp-for="RoomType" />
+                    <input type="hidden" asp-for="PricePerNight" id="hdnPricePerNight" />
+                    <input type="hidden" asp-for="Capacity" id="hdnCapacity" />
+
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger shadow-sm rounded-3 mb-4" role="alert"></div>
+
+                    <!-- Full Name -->
+                    <div class="mb-3">
+                        <label asp-for="GuestName" class="form-label fw-semibold small text-uppercase text-muted"></label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light text-muted"><i class="bi bi-person"></i></span>
+                            <input asp-for="GuestName" class="form-control" placeholder="e.g. Eleanor Vance" />
+                        </div>
+                        <span asp-validation-for="GuestName" class="text-danger small"></span>
+                    </div>
+
+                    <!-- Email & Phone -->
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label asp-for="Email" class="form-label fw-semibold small text-uppercase text-muted"></label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light text-muted"><i class="bi bi-envelope"></i></span>
+                                <input asp-for="Email" type="email" class="form-control" placeholder="eleanor.vance@example.com" />
+                            </div>
+                            <span asp-validation-for="Email" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="Phone" class="form-label fw-semibold small text-uppercase text-muted"></label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light text-muted"><i class="bi bi-telephone"></i></span>
+                                <input asp-for="Phone" class="form-control" placeholder="+1 (555) 234-5678" />
+                            </div>
+                            <span asp-validation-for="Phone" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <hr class="my-4 text-muted opacity-25">
+
+                    <h4 class="h5 font-heading mb-3 text-primary">Stay Details</h4>
+
+                    <!-- Check-in & Check-out -->
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label asp-for="CheckInDate" class="form-label fw-semibold small text-uppercase text-muted"></label>
+                            <input asp-for="CheckInDate" type="date" class="form-control" id="bookingCheckIn" 
+                                   min="@DateTime.Today.ToString("yyyy-MM-dd")" />
+                            <span asp-validation-for="CheckInDate" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="CheckOutDate" class="form-label fw-semibold small text-uppercase text-muted"></label>
+                            <input asp-for="CheckOutDate" type="date" class="form-control" id="bookingCheckOut" 
+                                   min="@DateTime.Today.AddDays(1).ToString("yyyy-MM-dd")" />
+                            <span asp-validation-for="CheckOutDate" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <!-- Number of Guests -->
+                    <div class="mb-4">
+                        <label asp-for="GuestsCount" class="form-label fw-semibold small text-uppercase text-muted"></label>
+                        <select asp-for="GuestsCount" class="form-select" id="bookingGuests">
+                            @for (int i = 1; i <= Model.Capacity; i++)
+                            {
+                                <option value="@i">@i @(i == 1 ? "Guest" : "Guests") (Max @Model.Capacity)</option>
+                            }
+                        </select>
+                        <span asp-validation-for="GuestsCount" class="text-danger small"></span>
+                    </div>
+
+                    <!-- Special Requests -->
+                    <div class="mb-4">
+                        <label asp-for="SpecialRequests" class="form-label fw-semibold small text-uppercase text-muted"></label>
+                        <textarea asp-for="SpecialRequests" class="form-control" rows="3" 
+                                  placeholder="Late arrival, high floor, anniversary setup, dietary preferences..."></textarea>
+                        <span asp-validation-for="SpecialRequests" class="text-danger small"></span>
+                    </div>
+
+                    <div class="p-3 rounded-3 bg-light border mb-4">
+                        <div class="d-flex align-items-center gap-2 text-dark fw-semibold mb-1">
+                            <i class="bi bi-wallet2 text-warning fs-5"></i> Payment Method: Pay at Hotel
+                        </div>
+                        <p class="text-muted small mb-0">
+                            No upfront payment required today. You may pay at the front desk upon check-in using major credit cards or cash.
+                        </p>
+                    </div>
+
+                    <button type="submit" class="btn btn-gold w-100 py-3 fs-5" id="btnSubmitBooking">
+                        <i class="bi bi-check-circle-fill me-1"></i> Confirm Reservation
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Selected Suite Summary Card -->
+        <div class="col-lg-5">
+            <div class="card border rounded-4 p-4 bg-white shadow-sm sticky-top" style="top: 100px;">
+                <h4 class="h5 font-heading mb-3">Reservation Summary</h4>
+                
+                <div class="rounded-3 overflow-hidden mb-3" style="height: 180px;">
+                    <img src="@Model.ImageUrl" alt="@Model.RoomType" class="w-100 h-100 object-fit-cover" />
+                </div>
+
+                <h5 class="fw-bold text-dark mb-1">@Model.RoomType</h5>
+                <div class="text-muted small mb-3">
+                    <i class="bi bi-door-closed text-warning me-1"></i> Room #@Model.RoomNumber &bull; Up to @Model.Capacity guests
+                </div>
+
+                <div class="bg-light p-3 rounded-3 mb-4">
+                    <div class="price-breakdown-row">
+                        <span>Nightly Rate</span>
+                        <span class="fw-semibold">$@Model.PricePerNight.ToString("N2")</span>
+                    </div>
+                    <div class="price-breakdown-row">
+                        <span>Duration</span>
+                        <span id="summaryNights">@Model.CalculatedNights night@(Model.CalculatedNights > 1 ? "s" : "")</span>
+                    </div>
+                    <div class="price-breakdown-row">
+                        <span>Taxes & Hotel Surcharge</span>
+                        <span class="text-success fw-semibold">INCLUDED</span>
+                    </div>
+                    <div class="price-breakdown-row total">
+                        <span>Total Payable</span>
+                        <span id="summaryTotal">$@Model.CalculatedTotalAmount.ToString("N2")</span>
+                    </div>
+                </div>
+
+                <div class="small text-secondary">
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                        <i class="bi bi-check2 text-success"></i> Free cancellation up to 48h before arrival
+                    </div>
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                        <i class="bi bi-check2 text-success"></i> Direct booking guarantee
+                    </div>
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="bi bi-check2 text-success"></i> Instant reservation voucher generated
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        const checkInInput = document.getElementById('bookingCheckIn');
+        const checkOutInput = document.getElementById('bookingCheckOut');
+        const pricePerNight = parseFloat(document.getElementById('hdnPricePerNight').value);
+        const summaryNights = document.getElementById('summaryNights');
+        const summaryTotal = document.getElementById('summaryTotal');
+
+        function updateSummary() {
+            if (checkInInput.value && checkOutInput.value) {
+                const inDate = new Date(checkInInput.value);
+                const outDate = new Date(checkOutInput.value);
+
+                // Ensure checkOut is at least 1 day after checkIn
+                const nextDay = new Date(inDate);
+                nextDay.setDate(nextDay.getDate() + 1);
+                checkOutInput.min = nextDay.toISOString().split('T')[0];
+
+                const diffTime = outDate - inDate;
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+                if (diffDays > 0) {
+                    summaryNights.innerText = `${diffDays} night${diffDays > 1 ? 's' : ''}`;
+                    const total = diffDays * pricePerNight;
+                    summaryTotal.innerText = `$${total.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+                } else {
+                    summaryNights.innerText = `Invalid dates`;
+                    summaryTotal.innerText = `$0.00`;
+                }
+            }
+        }
+
+        checkInInput.addEventListener('change', function () {
+            const inDate = new Date(checkInInput.value);
+            const nextDay = new Date(inDate);
+            nextDay.setDate(nextDay.getDate() + 1);
+            const nextDayStr = nextDay.toISOString().split('T')[0];
+            checkOutInput.min = nextDayStr;
+            if (checkOutInput.value <= checkInInput.value) {
+                checkOutInput.value = nextDayStr;
+            }
+            updateSummary();
+        });
+
+        checkOutInput.addEventListener('change', updateSummary);
+    </script>
+}

@@ -1,0 +1,112 @@
+@model IEnumerable<HotelBookingSystem.ViewModels.RoomAdminViewModel>
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Manage Rooms & Suites";
+}
+
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
+    <div>
+        <h4 class="font-heading text-primary mb-1">Hotel Suites & Inventory</h4>
+        <p class="text-muted small mb-0">Add, update, deactivate or manage luxury rooms persisted in SQL Server.</p>
+    </div>
+    <a asp-area="Admin" asp-controller="Rooms" asp-action="Create" class="btn btn-gold">
+        <i class="bi bi-plus-circle me-1"></i> Add New Suite
+    </a>
+</div>
+
+<div class="gv-table-card">
+    <div class="table-responsive">
+        <table class="table gv-table align-middle">
+            <thead>
+                <tr>
+                    <th style="width: 100px;">Photo</th>
+                    <th>Room #</th>
+                    <th>Suite Category</th>
+                    <th>Price / Night</th>
+                    <th>Capacity</th>
+                    <th>Status</th>
+                    <th>Bookings</th>
+                    <th class="text-end" style="min-width: 220px;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (!Model.Any())
+                {
+                    <tr>
+                        <td colspan="8" class="text-center py-4 text-muted">No rooms currently defined in the database.</td>
+                    </tr>
+                }
+                else
+                {
+                    @foreach (var room in Model)
+                    {
+                        <tr>
+                            <td>
+                                <img src="@room.ImageUrl" alt="@room.RoomType" class="rounded-3 object-fit-cover shadow-sm" style="width: 80px; height: 55px;" />
+                            </td>
+                            <td class="fw-bold font-monospace text-primary fs-6">
+                                #@room.RoomNumber
+                            </td>
+                            <td>
+                                <div class="fw-semibold text-dark">@room.RoomType</div>
+                                <div class="text-muted small text-truncate" style="max-width: 280px;">@room.Amenities</div>
+                            </td>
+                            <td class="fw-bold text-dark">
+                                $@room.PricePerNight.ToString("N2")
+                            </td>
+                            <td>
+                                <i class="bi bi-people text-warning me-1"></i> @room.Capacity @(room.Capacity == 1 ? "Guest" : "Guests")
+                            </td>
+                            <td>
+                                @if (room.IsActive)
+                                {
+                                    <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1 rounded-pill">
+                                        <i class="bi bi-check-circle-fill me-1"></i> Active
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle px-2 py-1 rounded-pill">
+                                        <i class="bi bi-pause-circle-fill me-1"></i> Inactive
+                                    </span>
+                                }
+                            </td>
+                            <td class="small">
+                                <span class="fw-semibold">@room.TotalBookingsCount</span> total
+                                @if (room.ActiveBookingsCount > 0)
+                                {
+                                    <div class="text-warning small fw-bold">(@room.ActiveBookingsCount upcoming)</div>
+                                }
+                            </td>
+                            <td class="text-end">
+                                <div class="d-inline-flex gap-1">
+                                    <a asp-area="Admin" asp-controller="Rooms" asp-action="Edit" asp-route-id="@room.RoomId" class="btn btn-sm btn-outline-primary" title="Edit Room Details">
+                                        <i class="bi bi-pencil-square"></i>
+                                    </a>
+
+                                    <!-- Toggle Active/Inactive -->
+                                    <form asp-area="Admin" asp-controller="Rooms" asp-action="ToggleActive" asp-route-id="@room.RoomId" method="post" class="d-inline">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn btn-sm @(room.IsActive ? "btn-outline-warning" : "btn-outline-success")" 
+                                                title="@(room.IsActive ? "Deactivate Room" : "Activate Room")">
+                                            <i class="bi @(room.IsActive ? "bi-eye-slash" : "bi-eye")"></i>
+                                        </button>
+                                    </form>
+
+                                    <!-- Safe Delete -->
+                                    <form asp-area="Admin" asp-controller="Rooms" asp-action="Delete" asp-route-id="@room.RoomId" method="post" class="d-inline"
+                                          onsubmit="return confirm('Are you sure you want to permanently delete Room @room.RoomNumber? This action cannot be undone if no active bookings exist.');">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete Room">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

@@ -1,0 +1,9 @@
+## .NET Core / Visual Studio
+[Bb]in/
+[Oo]bj/
+*.user
+*.suo
+.vs/
+.vscode/
+*.DotSettings.user
+*.ide/

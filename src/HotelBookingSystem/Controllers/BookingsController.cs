@@ -123,19 +123,19 @@ namespace HotelBookingSystem.Controllers
             }
 
             TempData["SuccessMessage"] = "Reservation successfully booked! Welcome to GrandVista.";
-            return RedirectToAction("Confirmation", new { reference = createdBooking.BookingReference });
+            return RedirectToAction("Confirmation", new { id = createdBooking.BookingId });
         }
 
-        // GET: /Bookings/Confirmation?reference=GV-2026-XXXXX
+        // GET: /Bookings/Confirmation?id=5
         [HttpGet]
-        public async Task<IActionResult> Confirmation(string reference)
+        public async Task<IActionResult> Confirmation(int id)
         {
-            if (string.IsNullOrWhiteSpace(reference))
+            if (id <= 0)
             {
                 return RedirectToAction("Index", "Home");
             }
 
-            var booking = await _bookingService.GetBookingByReferenceAsync(reference);
+            var booking = await _bookingService.GetBookingByIdAsync(id);
             if (booking == null)
             {
                 TempData["ErrorMessage"] = "Reservation not found.";
@@ -172,12 +172,12 @@ namespace HotelBookingSystem.Controllers
                 return View(model);
             }
 
-            var booking = await _bookingService.GetBookingByReferenceAndEmailAsync(model.BookingReference, model.Email);
+            var booking = await _bookingService.GetBookingByIdAndEmailAsync(model.BookingId!.Value, model.Email);
             model.HasSearched = true;
 
             if (booking == null)
             {
-                model.SearchError = "No reservation matched that booking reference and email address. Please double-check your confirmation details.";
+                model.SearchError = "No reservation matched that Booking ID and email address. Please double-check your confirmation details.";
                 model.BookingResult = null;
             }
             else

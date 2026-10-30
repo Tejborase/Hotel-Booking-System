@@ -158,7 +158,7 @@
         <table class="table gv-table align-middle">
             <thead>
                 <tr>
-                    <th>Reference</th>
+                    <th>Booking ID</th>
                     <th>Guest</th>
                     <th>Suite</th>
                     <th>Stay Dates</th>
@@ -182,7 +182,7 @@
                         <tr>
                             <td class="font-monospace fw-bold text-dark">
                                 <a asp-area="Admin" asp-controller="Bookings" asp-action="Details" asp-route-id="@b.BookingId" class="text-decoration-none text-primary">
-                                    @b.BookingReference
+                                    #@b.BookingId
                                 </a>
                             </td>
                             <td>

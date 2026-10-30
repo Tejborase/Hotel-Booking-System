@@ -8,7 +8,7 @@
         <span class="text-uppercase text-gold fw-bold letter-spacing-2 small">Guest Services</span>
         <h1 class="display-5 font-heading text-white mt-2 mb-2">Find Your Reservation</h1>
         <p class="lead text-white-50 mx-auto" style="max-width: 600px;">
-            Enter your unique GrandVista booking reference code and the email address used during reservation to view your stay details.
+            Enter your numeric GrandVista Booking ID and the email address used during reservation to view your stay details.
         </p>
     </div>
 </div>
@@ -30,13 +30,13 @@
             }
 
             <div class="mb-3">
-                <label asp-for="BookingReference" class="form-label small fw-bold text-uppercase text-muted"></label>
+                <label asp-for="BookingId" class="form-label small fw-bold text-uppercase text-muted"></label>
                 <div class="input-group">
                     <span class="input-group-text bg-light"><i class="bi bi-hash"></i></span>
-                    <input asp-for="BookingReference" class="form-control text-uppercase" placeholder="e.g. GV-2026-A189C" required />
+                    <input asp-for="BookingId" type="number" min="1" class="form-control" placeholder="e.g. 1" required />
                 </div>
-                <span asp-validation-for="BookingReference" class="text-danger small"></span>
-                <div class="form-text small">Found on your confirmation email or reservation voucher.</div>
+                <span asp-validation-for="BookingId" class="text-danger small"></span>
+                <div class="form-text small">Found on your confirmation voucher or summary.</div>
             </div>
 
             <div class="mb-4">
@@ -65,7 +65,7 @@
                 <div class="d-flex flex-wrap justify-content-between align-items-start border-bottom pb-4 mb-4">
                     <div>
                         <span class="badge bg-secondary text-primary px-3 py-1 rounded-pill small mb-2">Reservation Found</span>
-                        <h2 class="h3 font-heading mb-1">Booking #@b.BookingReference</h2>
+                        <h2 class="h3 font-heading mb-1">Booking #@b.BookingId</h2>
                         <div class="text-muted small">Booked on @b.CreatedAt.ToString("MMMM dd, yyyy")</div>
                     </div>
                     <div class="mt-2 mt-md-0">
@@ -147,7 +147,7 @@
                 }
 
                 <div class="d-flex justify-content-end gap-2">
-                    <a asp-action="Confirmation" asp-route-reference="@b.BookingReference" class="btn btn-outline-forest">
+                    <a asp-action="Confirmation" asp-route-id="@b.BookingId" class="btn btn-outline-forest">
                         <i class="bi bi-printer me-1"></i> View Printable Confirmation
                     </a>
                 </div>

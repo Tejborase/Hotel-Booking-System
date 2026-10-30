@@ -2,7 +2,6 @@ using HotelBookingSystem.Data;
 using HotelBookingSystem.Models;
 using HotelBookingSystem.ViewModels;
 using Microsoft.EntityFrameworkCore;
-using System.Security.Cryptography;
 
 namespace HotelBookingSystem.Services
 {
@@ -127,16 +126,8 @@ namespace HotelBookingSystem.Services
                     var pricePerNightSnapshot = room.PricePerNight;
                     var serverCalculatedTotal = pricePerNightSnapshot * nights;
 
-                    // 6. Generate Unique Reference Number
-                    string reference = GenerateBookingReference();
-                    while (await _context.Bookings.AnyAsync(b => b.BookingReference == reference))
-                    {
-                        reference = GenerateBookingReference();
-                    }
-
                     createdBooking = new Booking
                     {
-                        BookingReference = reference,
                         RoomId = room.RoomId,
                         GuestName = model.GuestName.Trim(),
                         Email = model.Email.Trim().ToLower(),
@@ -173,37 +164,21 @@ namespace HotelBookingSystem.Services
             return (true, "Booking confirmed successfully!", createdBooking);
         }
 
-        public async Task<Booking?> GetBookingByReferenceAndEmailAsync(string bookingReference, string email)
+        public async Task<Booking?> GetBookingByIdAndEmailAsync(int bookingId, string email)
         {
-            if (string.IsNullOrWhiteSpace(bookingReference) || string.IsNullOrWhiteSpace(email))
+            if (bookingId <= 0 || string.IsNullOrWhiteSpace(email))
             {
                 return null;
             }
 
-            var cleanRef = bookingReference.Trim().ToUpper();
             var cleanEmail = email.Trim().ToLower();
 
             return await _context.Bookings
                 .Include(b => b.Room)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(b => 
-                    b.BookingReference.ToUpper() == cleanRef && 
+                    b.BookingId == bookingId && 
                     b.Email.ToLower() == cleanEmail);
-        }
-
-        public async Task<Booking?> GetBookingByReferenceAsync(string bookingReference)
-        {
-            if (string.IsNullOrWhiteSpace(bookingReference))
-            {
-                return null;
-            }
-
-            var cleanRef = bookingReference.Trim().ToUpper();
-
-            return await _context.Bookings
-                .Include(b => b.Room)
-                .AsNoTracking()
-                .FirstOrDefaultAsync(b => b.BookingReference.ToUpper() == cleanRef);
         }
 
         public async Task<Booking?> GetBookingByIdAsync(int bookingId)
@@ -228,7 +203,7 @@ namespace HotelBookingSystem.Services
             {
                 var term = searchTerm.Trim().ToLower();
                 query = query.Where(b => 
-                    b.BookingReference.ToLower().Contains(term) ||
+                    b.BookingId.ToString().Contains(term) ||
                     b.GuestName.ToLower().Contains(term) ||
                     b.Email.ToLower().Contains(term) ||
                     b.Phone.ToLower().Contains(term) ||
@@ -283,7 +258,7 @@ namespace HotelBookingSystem.Services
             booking.BookingStatus = newStatus;
             await _context.SaveChangesAsync();
 
-            return (true, $"Booking {booking.BookingReference} status updated to {newStatus}.");
+            return (true, $"Booking #{booking.BookingId} status updated to {newStatus}.");
         }
 
         public async Task<AdminDashboardViewModel> GetDashboardStatsAsync()
@@ -354,19 +329,6 @@ namespace HotelBookingSystem.Services
                 RecentBookings = recentBookings,
                 RoomOccupancies = roomOccupancyList
             };
-        }
-
-        private static string GenerateBookingReference()
-        {
-            const string chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-            var bytes = new byte[5];
-            RandomNumberGenerator.Fill(bytes);
-            var code = new char[5];
-            for (int i = 0; i < 5; i++)
-            {
-                code[i] = chars[bytes[i] % chars.Length];
-            }
-            return $"GV-{DateTime.UtcNow.Year}-{new string(code)}";
         }
     }
 }

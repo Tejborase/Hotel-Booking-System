@@ -38,18 +38,11 @@ namespace HotelBookingSystem.Data
             // Booking configuration
             builder.Entity<Booking>(entity =>
             {
-                entity.HasIndex(b => b.BookingReference)
-                      .IsUnique()
-                      .HasDatabaseName("IX_Bookings_BookingReference");
-
                 entity.Property(b => b.PricePerNight)
                       .HasColumnType("decimal(18,2)");
 
                 entity.Property(b => b.TotalAmount)
                       .HasColumnType("decimal(18,2)");
-
-                entity.Property(b => b.BookingReference)
-                      .HasMaxLength(30);
 
                 entity.Property(b => b.BookingStatus)
                       .HasMaxLength(30);

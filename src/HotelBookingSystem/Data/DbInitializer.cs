@@ -163,7 +163,6 @@ namespace HotelBookingSystem.Data
                 {
                     new Booking
                     {
-                        BookingReference = "GV-2026-A189C",
                         RoomId = room101.RoomId,
                         GuestName = "Eleanor Vance",
                         Email = "eleanor.vance@example.com",
@@ -179,7 +178,6 @@ namespace HotelBookingSystem.Data
                     },
                     new Booking
                     {
-                        BookingReference = "GV-2026-B942D",
                         RoomId = room201.RoomId,
                         GuestName = "Marcus Sterling",
                         Email = "marcus.sterling@example.com",
@@ -195,7 +193,6 @@ namespace HotelBookingSystem.Data
                     },
                     new Booking
                     {
-                        BookingReference = "GV-2026-C311F",
                         RoomId = room301.RoomId,
                         GuestName = "Sophia Laurent",
                         Email = "sophia.laurent@example.com",
@@ -211,7 +208,6 @@ namespace HotelBookingSystem.Data
                     },
                     new Booking
                     {
-                        BookingReference = "GV-2026-D785X",
                         RoomId = room101.RoomId,
                         GuestName = "Jonathan Davis",
                         Email = "j.davis@example.com",

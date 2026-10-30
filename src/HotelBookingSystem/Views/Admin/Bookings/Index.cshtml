@@ -19,7 +19,7 @@
                 <div class="input-group">
                     <span class="input-group-text bg-light"><i class="bi bi-search"></i></span>
                     <input type="text" name="searchTerm" class="form-control" 
-                           placeholder="Search by reference, guest name, email, phone, or room #" 
+                           placeholder="Search by Booking ID, guest name, email, phone, or room #" 
                            value="@Model.SearchTerm" />
                 </div>
             </div>
@@ -51,7 +51,7 @@
         <table class="table gv-table align-middle">
             <thead>
                 <tr>
-                    <th>Reference</th>
+                    <th>Booking ID</th>
                     <th>Guest Details</th>
                     <th>Suite</th>
                     <th>Check-in</th>
@@ -79,7 +79,7 @@
                         <tr>
                             <td class="font-monospace fw-bold text-dark">
                                 <a asp-area="Admin" asp-controller="Bookings" asp-action="Details" asp-route-id="@b.BookingId" class="text-decoration-none text-primary">
-                                    @b.BookingReference
+                                    #@b.BookingId
                                 </a>
                             </td>
                             <td>
@@ -141,7 +141,7 @@
                                     @if (b.BookingStatus != "Cancelled")
                                     {
                                         <form asp-area="Admin" asp-controller="Bookings" asp-action="Cancel" asp-route-id="@b.BookingId" method="post" class="d-inline"
-                                              onsubmit="return confirm('Are you sure you want to cancel booking @b.BookingReference? This will release the room availability for those dates.');">
+                                              onsubmit="return confirm('Are you sure you want to cancel booking #@b.BookingId? This will release the room availability for those dates.');">
                                             @Html.AntiForgeryToken()
                                             <button type="submit" class="btn btn-sm btn-outline-danger" title="Cancel Booking">
                                                 <i class="bi bi-x-lg"></i> Cancel

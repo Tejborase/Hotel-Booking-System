@@ -1,6 +1,6 @@
 @model HotelBookingSystem.ViewModels.BookingConfirmationViewModel
 @{
-    ViewData["Title"] = $"Reservation Confirmed - {Model.Booking.BookingReference}";
+    ViewData["Title"] = $"Reservation Confirmed - Booking #{Model.Booking.BookingId}";
 }
 
 <div class="container py-5">
@@ -15,8 +15,8 @@
                 Thank you, @Model.Booking.GuestName. A confirmation email has been dispatched to <strong>@Model.Booking.Email</strong>.
             </p>
             <div class="confirmation-ref-box text-white">
-                <small class="d-block text-warning text-uppercase" style="font-size: 0.72rem; letter-spacing: 0.15em;">Booking Reference</small>
-                <strong>@Model.Booking.BookingReference</strong>
+                <small class="d-block text-warning text-uppercase" style="font-size: 0.72rem; letter-spacing: 0.15em;">Booking ID</small>
+                <strong>#@Model.Booking.BookingId</strong>
             </div>
         </div>
 

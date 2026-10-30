@@ -136,9 +136,10 @@ namespace HotelBookingSystem.ViewModels
 
     public class MyBookingLookupViewModel
     {
-        [Required(ErrorMessage = "Booking reference is required.")]
-        [Display(Name = "Booking Reference Number")]
-        public string BookingReference { get; set; } = string.Empty;
+        [Required(ErrorMessage = "Booking ID is required.")]
+        [Range(1, int.MaxValue, ErrorMessage = "Please enter a valid Booking ID.")]
+        [Display(Name = "Booking ID")]
+        public int? BookingId { get; set; }
 
         [Required(ErrorMessage = "Email address is required.")]
         [EmailAddress(ErrorMessage = "Please enter the email address used when booking.")]

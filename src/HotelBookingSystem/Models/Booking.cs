@@ -9,11 +9,6 @@ namespace HotelBookingSystem.Models
         public int BookingId { get; set; }
 
         [Required]
-        [StringLength(30)]
-        [Display(Name = "Booking Reference")]
-        public string BookingReference { get; set; } = string.Empty;
-
-        [Required]
         [Display(Name = "Room")]
         public int RoomId { get; set; }
 
